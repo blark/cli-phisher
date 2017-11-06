@@ -1,9 +1,16 @@
 ---
+#
+# this is a yaml front matter, for setting email configuration variables.
+#
 name: test_campaign
 from: Example <example@securefile.io>
 subject: This is a test email
 targets: test_targets.txt
-key: b'\x04\xfad\xe5' 
+key: b'\x04\xfad\xe5'
+#
+# everything below the three dashes is the phishing email body (using Markdown) 
+# it will be converted to HTML before sending the email.
+#
 ---
 Dear {{firstname}},
 

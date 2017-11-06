@@ -30,7 +30,7 @@ Options:
 1. Setup the config.yml file with your email server configuration. The example configuration included should be self-explanatory.
 2. Next create an email template based on the included email.md, again it should be pretty straightforward.
 3. Create text file containing target email addresses (one per line)
-3. Send a test with `python3 cli-phisher.py -t test.user@domain.com` (note: `-t <email>` can be used multiple times)
+3. Send a test with `python3 cli-phisher.py -t test.user@domain.com email.md` (note: `-t <email>` can be used multiple times)
 4. Once you're satisfied with the message to send to all targets use the `--send` option. The script will double check you really want to send them.
 
 ## Template notes
