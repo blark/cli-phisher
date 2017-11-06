@@ -21,9 +21,8 @@ class Mailer:
         self.logger.addHandler(handler)
         self.logger.setLevel(logging.DEBUG)
 
-    def uid(self, addr):
+    def uid(self, addr, key):
         # encrypt email address with RC4 and then base64 encode it
-        key = b'\x1d\x08\x04\xda\x86'
         cipher = ARC4.new(key)
         return urlsafe_b64encode(cipher.encrypt(addr)).decode('utf-8')
 
@@ -33,8 +32,7 @@ class Mailer:
         # insert customizations into email here
         first_name = to_addr.split('.')[0].capitalize()
         body = body.replace('{{firstname}}', first_name)
-        body = body.replace('{{url}}', email_cfg['url'])
-        body = body.replace('{{uid}}', self.uid(to_addr))
+        body = body.replace('{{uid}}', self.uid(to_addr, email_cfg['key']))
         # end email customizations
         msg = MIMEMultipart('related')
         msg['To'] = to_addr
