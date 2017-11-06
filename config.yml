@@ -1,0 +1,11 @@
+smtp:
+    default:
+        host: smtp.server
+        port: 465
+        user: username
+        pass: password
+    google:
+        host: smtp.gmail.com
+        port: 465
+        user: example@gmail.com
+        pass: secret
