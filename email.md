@@ -2,8 +2,8 @@
 #
 # this is a yaml front matter, for setting email configuration variables.
 #
-name: test_campaign
-from: Example <example@securefile.io>
+name: test
+from: Example User <example@securefile.io>
 subject: This is a test email
 targets: test_targets.txt
 key: b'\x04\xfad\xe5'

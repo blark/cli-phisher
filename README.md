@@ -1,6 +1,8 @@
 # cli-phisher
 
-This is a small script to facilitate sending phishing emails from the CLI.
+This is a small script to facilitate sending phishing emails using SMTP from the CLI. 
+
+Cli-Phisher assumes that you've already got a phishing site up waiting to receive credentials, record statistics, etc. It only handles actually sending phishing emails.
 
 ## Install
 
@@ -28,14 +30,16 @@ Options:
 ## Instructions
 
 1. Setup the config.yml file with your email server configuration. The example configuration included should be self-explanatory.
-2. Next create an email template based on the included email.md, again it should be pretty straightforward.
-3. Create text file containing target email addresses (one per line)
-3. Send a test with `python3 cli-phisher.py -t test.user@domain.com email.md` (note: `-t <email>` can be used multiple times)
+2. Next create an email template based on the included email.md, again the included example should be sufficient to illustrate how email templates work.
+3. Create text file containing target email addresses (one per line) 
+3. Send a test with `python3 cli-phisher.py -t test.user@domain.com email.md` (note: `-t <email>` can be used multiple times) 
 4. Once you're satisfied with the message to send to all targets use the `--send` option. The script will double check you really want to send them.
 
 ## Template notes
 
-The UID is encrypted just to be sure that some smartypants that recognizes base64 won't be able to read them. You can generate a key like this:
+When viewing the template in GitHub make sure you view it in raw mode because the front matter and comments get mangled by GitHub's Markdown interpreter.
+
+UIDs are encrypted just to be sure that some smartypants that recognizes base64 won't be able to easily decipher them. You can generate a key like this:
 
 ```
 from os import urandom
