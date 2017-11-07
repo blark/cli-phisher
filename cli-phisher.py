@@ -9,6 +9,7 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email import encoders
+from pprint import pprint
 import logging
 import click
 from markdown import markdown
@@ -37,15 +38,40 @@ class CliPhisher:
         # smtplib logs debug to stderr, redirect it to a file
         self.smtp_log = open('{0}_smtp.log'.format(self.email_cfg['name']), 'a')
         sys.stderr = self.smtp_log
+        # this is super derpy but because we've been forced to redirect stderr we
+        # now need to redirect excpetions to stdout for troubleshooting. hacky AF.
+        excepthook = lambda *args: print(args)
+        sys.excepthook = excepthook
         # start sending tests / phishing emails
         self.go(test, send)
 
     def load_targets(self, f):
-        """ Eventually this function will be used to create a dict for each target as it is loaded
-            the dict will be passed to the send_email func to customize each phishing email.
+        """ Each email is a key in the targets dictionary, the value of each key
+            is another dict that contains substitutions for customizing the email.
+
+            For example: {'foo.bar@protiveo.com': {'firstname': 'foo',
+                          'uid': 'n0LLTwHviUe6j0Z2dkd0Qwvsg_s='}}
+
+            The send_email function will automatically replace any instances of
+            '{{firstname}} and {{uid}} with the corresponding values.
         """
-        with open(f) as target_file:
-            targets = [line.rstrip('\n') for line in target_file]
+        targets = {}
+        if f.endswith('.txt'):
+            # read in the function for acquiring the firstname from an email address
+            get_name = eval(self.email_cfg['get_name'])
+            # get targets and determine substitution key/value pairs
+            with open(f) as target_file:
+                for line in target_file:
+                    line = line.rstrip('\n')
+                    targets[line] = {'firstname': get_name(line),
+                                     'uid': self.uid(line, self.email_cfg['key'])}
+        elif f.endswith('.csv'):
+            # TODO: Add CSV processing
+            click.secho('Sorry I\'m too dumb to handle CSV right now')
+            raise click.Abort()
+        else:
+            click.secho('You must provide a .txt or .csv file with targets')
+            raise click.Abort()
         click.secho('Read {0} targets from {1}'.format(len(targets), self.email_cfg['targets']))
         return targets
 
@@ -54,13 +80,13 @@ class CliPhisher:
         cipher = ARC4.new(key)
         return urlsafe_b64encode(cipher.encrypt(addr)).decode('utf-8')
 
-    def send_email(self, smtp, to_addr, body, email_cfg):
-        from_addr = email_cfg['from']
-        subject = email_cfg['subject']
+    def send_email(self, smtp, to_addr):
+        from_addr = self.email_cfg['from']
+        subject = self.email_cfg['subject']
+        body = self.email_body
         # insert customizations into email here
-        first_name = to_addr.split('.')[0].capitalize()
-        body = body.replace('{{firstname}}', first_name)
-        body = body.replace('{{uid}}', self.uid(to_addr, email_cfg['key']))
+        for key, value in self.targets[to_addr].items():
+            body = body.replace('{{{{{0}}}}}'.format(key), value)
         # end email customizations
         msg = MIMEMultipart('related')
         msg['To'] = to_addr
@@ -90,14 +116,15 @@ class CliPhisher:
         # send test email
         for addr in test:
             click.secho('Sending test email to {0}'.format(addr), fg='green')
-            self.send_email(smtp, addr, self.email_body, self.email_cfg)
-        # send emails
+            self.send_email(smtp, addr)
+        # send phishing emails
         if send:
             if click.confirm('I\'m about to send emails, do you want to continue?'):
-                with click.progressbar(self.targets, label='Sending emails',
-                                       length=len(self.targets)) as bar:
+                target_emails = list(self.targets.keys())
+                with click.progressbar(target_emails, label='Sending emails',
+                                       length=len(target_emails)) as bar:
                     for addr in bar:
-                        self.send_email(smtp, addr, self.email_body, self.email_cfg)
+                        self.send_email(smtp, addr)
             else:
                 click.secho('Not sending any emails')
         else:
