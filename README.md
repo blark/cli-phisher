@@ -57,7 +57,7 @@ Example phishing email template:
 # this is a yaml front matter, for setting email configuration variables.
 #
 name: test
-from: Example User <example@securefile.io>
+from: Example User <example@phishing.com>
 subject: This is a test email
 targets: test_targets.txt
 key: b'\x04\xfad\xe5'
