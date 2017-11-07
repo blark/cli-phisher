@@ -9,7 +9,6 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email import encoders
-from pprint import pprint
 import logging
 import click
 from markdown import markdown
@@ -46,7 +45,7 @@ class CliPhisher:
         self.go(test, send)
 
     def load_targets(self, f):
-        """ Each email is a key in the targets dictionary, the value of each key
+        """ Each target email is a key in the targets dict, the value of each key
             is another dict that contains substitutions for customizing the email.
 
             For example: {'foo.bar@protiveo.com': {'firstname': 'foo',
