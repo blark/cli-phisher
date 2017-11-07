@@ -34,6 +34,7 @@ class CliPhisher:
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
         self.logger.setLevel(logging.DEBUG)
+        # smtplib logs debug to stderr, redirect it to a file
         self.smtp_log = open('{0}_smtp.log'.format(self.email_cfg['name']), 'a')
         sys.stderr = self.smtp_log
         # start sending tests / phishing emails
@@ -73,8 +74,8 @@ class CliPhisher:
 
     def smtp_connect(self, user, pw, server, port, dbg=False):
         s = smtplib.SMTP_SSL(host=server, port=port)
-        if True:
-            s.set_debuglevel(2)
+        # sets smtp transaction log with timestamps
+        s.set_debuglevel(2)
         s.login(user, pw)
         return s
 
@@ -108,7 +109,7 @@ class CliPhisher:
             pass
         self.smtp_log.close()
 
-
+# set up command line interface
 @click.command()
 @click.argument('email', type=click.File('r'))
 @click.option('--test', '-t', multiple=True, help='Email address to send test message to.'

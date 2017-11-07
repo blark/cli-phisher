@@ -12,21 +12,6 @@ After cloning the repo, install the requirements with:
 
 `pip install -r requirements.txt`
 
-## Help
-
-```
-./cli-phisher.py --help
-Usage: cli-phisher.py [OPTIONS] EMAIL
-
-Options:
-  -t, --test TEXT        Email address to send test message to. Multiple -t
-                         options are allowed.
-  --send                 Required command line option to arm email sending.
-  --server TEXT          SMTP server to use (default: "default")
-  -c, --config FILENAME  Configuration file name to use (default: config.yml)
-  --help                 Show this message and exit.
-```
-
 ## Instructions
 
 1. Setup the config.yml file with your email server configuration. The example configuration included should be self-explanatory.
@@ -34,6 +19,34 @@ Options:
 3. Create text file containing target email addresses (one per line) 
 3. Send a test with `python3 cli-phisher.py -t test.user@domain.com email.md` (note: `-t <email>` can be used multiple times) 
 4. Once you're satisfied with the message to send to all targets use the `--send` option. The script will double check you really want to send them.
+
+## Help
+
+```
+python3 cli-phisher.py --help
+Usage: cli-phisher.py [OPTIONS] EMAIL
+
+Options:
+  -t, --test TEXT        Email address to send test message to. Multiple -t
+                         options are allowed (--send is not required for test
+                         emails).
+  --send                 Required command line option to arm email sending.
+  --server TEXT          SMTP server to use (default: "default")
+  -c, --config FILENAME  Configuration file name to use (default: config.yml)
+  --help                 Show this message and exit.
+```
+
+### Example
+
+Sending a phishing email:
+
+```python3 cli-phisher.py --send email.md
+Read 3 targets from test_targets.txt
+Initiating SMTP connection to smtp.foo.com
+I'm about to send emails, do you want to continue? [y/N]: y
+Sending emails  [####################################]  100%
+Closing connection to SMTP server
+```
 
 ## Template notes
 
