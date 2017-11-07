@@ -114,9 +114,14 @@ class CliPhisher:
         else:
             click.secho('No emails to send.')
         # send test email
+        get_name = eval(self.email_cfg['get_name'])
         for addr in test:
-            click.secho('Sending test email to {0}'.format(addr), fg='green')
-            self.send_email(smtp, addr)
+            click.secho('Adding test email {0}'.format(addr), fg='green')
+            self.targets[addr] = {'firstname': get_name(addr),
+                                  'uid': self.uid(addr, self.email_cfg['key'])}
+            # send test emails even if --sent is not on cmd line
+            if not send:
+                self.send_email(smtp, addr)
         # send phishing emails
         if send:
             if click.confirm('I\'m about to send emails, do you want to continue?'):
